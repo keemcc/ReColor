@@ -1,47 +1,40 @@
 from PIL import Image
+from functions import *
+import pyautogui
 
-# Calculate distance between original and pallet values (not sqrt as this doesn't affect which one will be smallest)
-def getDistance(realColor, palletColor):
-    realR, realG, realB = realColor
-    palletR, palletG, palletB = palletColor
-    return ((realR - palletR)**2 + (realB - palletB)**2 + (realG - palletG)**2)
-
-# Get the closest color match
-def getClosestMatch(realColor, palletColors):
-    closestMatch = None
-    matchDistance = None
-    for palletColor in palletColors:
-        currentDistance = getDistance(realColor, palletColor)
-        if (not closestMatch) or (currentDistance < matchDistance):
-            closestMatch = palletColor
-            matchDistance = currentDistance
-    return closestMatch
-
-
-# Get the pallet colors as a set
-def getPallet(pallet):
-    palletColors = set()
-    pixels = pallet.load()
-    width, height = pallet.size
-    for x in range(width):
-        for y in range(height):
-            palletColors.add(pixels[x, y])
-    return palletColors
-
-originalImage = Image.open("./media/kelpy.jpg").convert("RGB")
-palletImage = Image.open("./media/wplacePallet.png").convert("RGB")
+# Get original image information
+originalName = input("Original Image (include extension): ")
+originalImage = Image.open(f"./media/{originalName}").convert("RGB")
 originalPixels = originalImage.load()
 width, height = originalImage.size
-palletColors = getPallet(palletImage)
 
+# Get pallet
+palletFilePrompt = input("Use Pallet Image File? ( Y / n ): ")
+usePalletFile = True if palletFilePrompt.lower() == "y" else False
+palletColors = set()
+if usePalletFile:
+    palletName = input("Pallet Image (include extension): ")
+    palletImage = Image.open(f"./media/{palletName}").convert("RGB")
+    palletColors = getPallet(palletImage)
+else:
+    while True:
+        if input("Hover over color and press Enter to add, or type text and Enter to finish") != "":
+            break
+        cursorX, cursorY = pyautogui.position()
+        originalColor = pyautogui.screenshot().getpixel((cursorX, cursorY))
+        palletColors.add(originalColor)
+        print(f"added color {originalColor}")
+print(palletColors)
+
+# Edit the image
 colorMap = dict()
-
-originalPixels = originalImage.load()
 for x in range(width):
     for y in range(height):
-        pixel = originalPixels[x, y]
-        if pixel not in colorMap:
-            colorMap[pixel] = getClosestMatch(pixel, palletColors)
-        originalPixels[x, y] = colorMap[pixel]
+        originalColor = originalPixels[x, y]
+        if originalColor not in colorMap:
+            colorMap[originalColor] = getClosestMatch(originalColor, palletColors)
+        originalPixels[x, y] = colorMap[originalColor]
 
-originalImage.save("./media/edited.png")
+# Save the image
+editedName = input("Please enter a name for the result: ")
+originalImage.save(f"./media/{editedName}.png")
