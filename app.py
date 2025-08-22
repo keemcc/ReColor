@@ -21,9 +21,9 @@ else:
         if input("Hover over color and press Enter to add, or type text and Enter to finish") != "":
             break
         cursorX, cursorY = pyautogui.position()
-        originalColor = pyautogui.screenshot().getpixel((cursorX, cursorY))
-        palletColors.add(originalColor)
-        print(f"added color {originalColor}")
+        grabbedColor = pyautogui.screenshot().getpixel((cursorX, cursorY))
+        palletColors.add(grabbedColor)
+        print(f"added color {grabbedColor}")
 print(palletColors)
 
 # Edit the image
