@@ -28,8 +28,8 @@ def getPallet(pallet):
             palletColors.add(pixels[x, y])
     return palletColors
 
-originalImage = Image.open("./media/Testx16.png").convert("RGB")
-palletImage = Image.open("./media/pallet.png").convert("RGB")
+originalImage = Image.open("./media/kelpy.jpg").convert("RGB")
+palletImage = Image.open("./media/wplacePallet.png").convert("RGB")
 originalPixels = originalImage.load()
 width, height = originalImage.size
 palletColors = getPallet(palletImage)
