@@ -1,6 +1,7 @@
 from PIL import Image
 from functions import *
 import pyautogui
+import keyboard
 
 # Get original image information
 originalName = input("Original Image (include extension): ")
@@ -20,10 +21,7 @@ else:
     while True:
         if input("Hover over color and press Enter to add, or type text and Enter to finish") != "":
             break
-        cursorX, cursorY = pyautogui.position()
-        grabbedColor = pyautogui.screenshot().getpixel((cursorX, cursorY))
-        palletColors.add(grabbedColor)
-        print(f"added color {grabbedColor}")
+        grabColor(palletColors)
 print(palletColors)
 
 # Edit the image

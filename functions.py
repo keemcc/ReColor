@@ -1,4 +1,5 @@
 from PIL import Image
+import pyautogui
 
 # Calculate distance between original and pallet values (not sqrt as this doesn't affect which will be smallest)
 def getDistance(realColor, palletColor):
@@ -26,3 +27,10 @@ def getPallet(palletImage):
         for y in range(height):
             palletColors.add(pixels[x, y])
     return palletColors
+
+# Grab color on keypress
+def grabColor(palletColors):
+    cursorX, cursorY = pyautogui.position()
+    grabbedColor = pyautogui.screenshot().getpixel((cursorX, cursorY))
+    palletColors.add(grabbedColor)
+    print(f"added color {grabbedColor}")
