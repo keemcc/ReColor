@@ -18,6 +18,7 @@ if usePalletFile:
     palletImage = Image.open(f"./media/{palletName}").convert("RGB")
     palletColors = getPallet(palletImage)
 else:
+    print("Press 'p' to add hovered color to pallet.\n Once done, press 'Escape' to complete pallet.")
     keyboard.on_press_key('p', lambda e: grabColor(palletColors))
     keyboard.wait('esc')
     keyboard.unhook_all()
