@@ -1,11 +1,19 @@
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from functions import *
-import pyautogui
 import keyboard
+import sys
 
 # Get original image information
 originalName = input("Original Image (include extension): ")
-originalImage = Image.open(f"./media/{originalName}").convert("RGB")
+try:
+    originalImage = Image.open(f"./media/{originalName}").convert("RGB")
+except FileNotFoundError:
+    print(f"Image with the name \"{originalName}\" was not found")
+    sys.exit()
+except UnidentifiedImageError:
+    print("Image could not be opened")
+    sys.exit()
+
 originalPixels = originalImage.load()
 width, height = originalImage.size
 
