@@ -18,10 +18,9 @@ if usePalletFile:
     palletImage = Image.open(f"./media/{palletName}").convert("RGB")
     palletColors = getPallet(palletImage)
 else:
-    while True:
-        if input("Hover over color and press Enter to add, or type text and Enter to finish") != "":
-            break
-        grabColor(palletColors)
+    keyboard.on_press_key('p', lambda e: grabColor(palletColors))
+    keyboard.wait('esc')
+    keyboard.unhook_all()
 print(palletColors)
 
 # Edit the image
