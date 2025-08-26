@@ -1,4 +1,4 @@
-from PIL import Image, UnidentifiedImageError
+from PIL import UnidentifiedImageError
 from functions import *
 import keyboard, sys, traceback
 
@@ -6,6 +6,7 @@ import keyboard, sys, traceback
 originalName = input("Original Image (include extension): ")
 originalImage = safeOpenImage(originalName)
 
+# Load the image
 try:
     originalPixels = originalImage.load()
 except (OSError, ValueError):
@@ -39,7 +40,7 @@ else:
     try:
         def safeGrab(event):
             try:
-                grabColor(palletColors)
+                print(f"added color {grabColor(palletColors)}")
             except (OSError, ValueError):
                 print("Screen capture failed or coordinates invalid")
             except Exception as e:

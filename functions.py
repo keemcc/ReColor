@@ -1,24 +1,28 @@
 import pyautogui, traceback, sys
 from PIL import Image
 
-# Calculate distance between original and pallet values (not sqrt as this doesn't affect which will be smallest)
-def getDistance(realColor, palletColor):
-    realR, realG, realB = realColor
-    palletR, palletG, palletB = palletColor
-    return ((realR - palletR)**2 + (realB - palletB)**2 + (realG - palletG)**2)
+# Calculate the distance between two passed colors
+#   This is done using the 3 respective (R, G, B) values passed in the color tuple and the 3 dimensional distance formula
+#   Square root is not needed as the minimum distance is still found when calculating distance squared
+def getDistance(color1, color2):
+    red1, green1, blue1 = color1
+    red2, green2, blue2 = color2
+    return ((red1 - red2)**2 + (blue1 - blue2)**2 + (green1 - green2)**2)
 
-# Get the closest color match to the real (original)
-def getClosestMatch(realColor, palletColors):
+# Gets the color from the pallet that is the closest to the original color
+#   Returns the color with the minimum distance from the original color
+def getClosestMatch(originalColor, palletColors):
     closestMatch = None
     matchDistance = None
     for palletColor in palletColors:
-        currentDistance = getDistance(realColor, palletColor)
+        currentDistance = getDistance(originalColor, palletColor)
         if (not closestMatch) or (currentDistance < matchDistance):
             closestMatch = palletColor
             matchDistance = currentDistance
     return closestMatch
 
 # Get the pallet colors as a set
+#   Load an image where all colors within the image will be added to a set and returned
 def getPallet(palletImage):
     palletColors = set()
     pixels = palletImage.load()
@@ -28,14 +32,16 @@ def getPallet(palletImage):
             palletColors.add(pixels[x, y])
     return palletColors
 
-# Grab color on keypress
+# Grab color hovered by mouse and add it to the pallet
+#   returns that grabbed color
 def grabColor(palletColors):
     cursorX, cursorY = pyautogui.position()
     grabbedColor = pyautogui.screenshot().getpixel((cursorX, cursorY))
     palletColors.add(grabbedColor)
-    print(f"added color {grabbedColor}")
+    return grabbedColor
 
-# Open an image relative to the media directory. will print an error and exit the program on error
+# Open an image relative to the media directory
+#   Print error message and exit the program on error
 def safeOpenImage(filepath):
     try:
         return Image.open(f"./media/{filepath}").convert("RGB")
@@ -48,7 +54,8 @@ def safeOpenImage(filepath):
         traceback.print_exc()
     sys.exit()
 
-# Save the image passed, giving it the passed name. prints an error if one occurs and exits the program.
+# Save the image passed, giving it the passed name
+#   Prints an error if one occurs and exits the program
 def safeSaveImage(image, name):
     try:
         image.save(f"./media/{name}.png")
