@@ -1,5 +1,5 @@
+import pyautogui, traceback, sys
 from PIL import Image
-import pyautogui
 
 # Calculate distance between original and pallet values (not sqrt as this doesn't affect which will be smallest)
 def getDistance(realColor, palletColor):
@@ -34,3 +34,30 @@ def grabColor(palletColors):
     grabbedColor = pyautogui.screenshot().getpixel((cursorX, cursorY))
     palletColors.add(grabbedColor)
     print(f"added color {grabbedColor}")
+
+# Open an image relative to the media directory. will print an error and exit the program on error
+def safeOpenImage(filepath):
+    try:
+        return Image.open(f"./media/{filepath}").convert("RGB")
+    except FileNotFoundError:
+        print(f"Image with that name was not found")
+    except OSError:
+        print("Image could not be opened")
+    except Exception as e:
+        print(f"Unexpected error: {type(e).__name__} - {e}")
+        traceback.print_exc()
+    sys.exit()
+
+# Save the image passed, giving it the passed name. prints an error if one occurs and exits the program.
+def safeSaveImage(image, name):
+    try:
+        image.save(f"./media/{name}.png")
+        return
+    except PermissionError:
+        print("Permission denied. Cannot save image to './media/'.")
+    except (OSError, ValueError) as e:
+        print(f"Image could not be saved: {type(e).__name__} - {e}")
+    except Exception as e:
+        print(f"Unexpected error while saving: {type(e).__name__} - {e}")
+        traceback.print_exc()
+    sys.exit()

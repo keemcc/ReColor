@@ -1,20 +1,21 @@
 from PIL import Image, UnidentifiedImageError
 from functions import *
-import keyboard
-import sys
+import keyboard, sys, traceback
 
 # Get original image information
 originalName = input("Original Image (include extension): ")
+originalImage = safeOpenImage(originalName)
+
 try:
-    originalImage = Image.open(f"./media/{originalName}").convert("RGB")
-except FileNotFoundError:
-    print(f"Image with the name \"{originalName}\" was not found")
+    originalPixels = originalImage.load()
+except (OSError, ValueError):
+    print("Image data could not be loaded")
     sys.exit()
-except UnidentifiedImageError:
-    print("Image could not be opened")
+except Exception as e:
+    print(f"Unexpected error: {type(e).__name__} - {e}")
+    traceback.print_exc()
     sys.exit()
 
-originalPixels = originalImage.load()
 width, height = originalImage.size
 
 # Get pallet
@@ -23,13 +24,34 @@ usePalletFile = True if palletFilePrompt.lower() == "y" else False
 palletColors = set()
 if usePalletFile:
     palletName = input("Pallet Image (include extension): ")
-    palletImage = Image.open(f"./media/{palletName}").convert("RGB")
-    palletColors = getPallet(palletImage)
+    palletImage = safeOpenImage(palletName)
+    try:
+        palletColors = getPallet(palletImage)
+    except (UnidentifiedImageError, OSError):
+        print("Image could not be opened")
+        sys.exit()
+    except Exception as e:
+        print(f"Unexpected error: {type(e).__name__} - {e}")
+        traceback.print_exc()
+        sys.exit()
 else:
     print("Press 'p' to add hovered color to pallet.\n Once done, press 'Escape' to complete pallet.")
-    keyboard.on_press_key('p', lambda e: grabColor(palletColors))
-    keyboard.wait('esc')
-    keyboard.unhook_all()
+    try:
+        def safeGrab(event):
+            try:
+                grabColor(palletColors)
+            except (OSError, ValueError):
+                print("Screen capture failed or coordinates invalid")
+            except Exception as e:
+                print(f"Unexpected error in grabColor: {type(e).__name__} - {e}")
+                traceback.print_exc()
+        keyboard.on_press_key('p', safeGrab)
+        keyboard.wait('esc')
+        keyboard.unhook_all()
+    except Exception as e:
+        print(f"Unexpected error during keyboard handling: {type(e).__name__} - {e}")
+        traceback.print_exc()
+        sys.exit()
 print(palletColors)
 
 # Edit the image
@@ -43,4 +65,4 @@ for x in range(width):
 
 # Save the image
 editedName = input("Please enter a name for the result: ")
-originalImage.save(f"./media/{editedName}.png")
+safeSaveImage(originalImage, editedName)
