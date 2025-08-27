@@ -1,4 +1,4 @@
-import pyautogui, traceback, sys
+import pyautogui, traceback, sys, keyboard
 from PIL import Image
 
 # Calculate the distance between two passed colors
@@ -38,13 +38,13 @@ def grabColor(palletColors):
     cursorX, cursorY = pyautogui.position()
     grabbedColor = pyautogui.screenshot().getpixel((cursorX, cursorY))
     palletColors.add(grabbedColor)
-    return grabbedColor
+    print(f"Grabbed color {grabbedColor}")
 
 # Open an image relative to the media directory
 #   Print error message and exit the program on error
 def safeOpenImage(filepath):
     try:
-        return Image.open(f"./media/{filepath}").convert("RGB")
+        return Image.open(filepath).convert("RGB")
     except FileNotFoundError:
         print(f"Image with that name was not found")
     except OSError:
@@ -68,3 +68,9 @@ def safeSaveImage(image, name):
         print(f"Unexpected error while saving: {type(e).__name__} - {e}")
         traceback.print_exc()
     sys.exit()
+
+def runColorPicker(palletColors):
+    print("Press 'p' to add hovered color to pallet.\n Once done, press 'Escape' to complete pallet.")
+    keyboard.on_press_key('p', lambda e: grabColor(palletColors))
+    keyboard.wait('esc')
+    keyboard.unhook_all()
