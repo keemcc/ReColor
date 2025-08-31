@@ -1,5 +1,15 @@
-import argparse
+import argparse, pickle, os
 from functions import safeOpenImage, getPallet, runColorPicker
+
+def savePallet(pallet, path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    with open((path+"/pallet.pkl"), "wb") as file:
+        pickle.dump(pallet, file)
+
+def loadPallet(path):
+    with open(path, "rb") as file:
+        return pickle.load(file)
 
 def pallet(args):
     print("run")
@@ -10,7 +20,7 @@ def pallet(args):
     else:
         runColorPicker(palletColors)
     print(palletColors)
-
+    savePallet(palletColors, "./data")
 
 def main():
     parser = argparse.ArgumentParser(prog="recolor", description="tools for recoloring images into rgb pallets")
@@ -20,9 +30,6 @@ def main():
     parser_pallet.set_defaults(function=pallet)
     args = parser.parse_args()
     args.function(args)
-    # subparser = parser.add_subparsers(title="subcommands", dest="subcommand", required=False)
-
-    
 
 if __name__ == "__main__":
     main()
