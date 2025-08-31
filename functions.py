@@ -23,7 +23,7 @@ def getClosestMatch(originalColor, palletColors):
 
 # Get the pallet colors as a set
 #   Load an image where all colors within the image will be added to a set and returned
-def getPallet(palletImage):
+def getPalette(palletImage):
     palletColors = set()
     pixels = palletImage.load()
     width, height = palletImage.size

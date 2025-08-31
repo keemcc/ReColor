@@ -27,7 +27,7 @@ if usePalletFile:
     palletName = input("Pallet Image (include extension): ")
     palletImage = safeOpenImage(palletName)
     try:
-        palletColors = getPallet(palletImage)
+        palletColors = getPalette(palletImage)
     except (UnidentifiedImageError, OSError):
         print("Image could not be opened")
         sys.exit()
