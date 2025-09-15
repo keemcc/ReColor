@@ -2,16 +2,17 @@ import argparse, pickle, os
 from functions import safeOpenImage, getPalette, runColorPicker, getClosestMatch
 from PIL import Image
 
-DATA_PATH = "./data"
+PROJECT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+DATA_DIRECTORY = os.path.join(PROJECT_DIRECTORY, "data")
 
 def savePalette(palette, path):
     if not os.path.exists(path):
         os.makedirs(path)
-    with open((path+"/palette.pkl"), "wb") as file:
+    with open(os.path.join(path, "palette.pkl"), "wb") as file:
         pickle.dump(palette, file)
 
 def loadPalette(path):
-    with open(path+"/palette.pkl", "rb") as file:
+    with open(os.path.join(path, "palette.pkl"), "rb") as file:
         return pickle.load(file)
 
 def palette(args):
@@ -23,7 +24,7 @@ def palette(args):
     else:
         runColorPicker(palette)
     print(palette)
-    savePalette(palette, "./data")
+    savePalette(palette, DATA_DIRECTORY)
 
 def export(args):
     paletteColors = set()
@@ -31,7 +32,7 @@ def export(args):
         paletteImage = safeOpenImage(filepath=(args.filepath))
         paletteColors = getPalette(paletteImage)
     else:
-        paletteColors = loadPalette(DATA_PATH)
+        paletteColors = loadPalette(DATA_DIRECTORY)
     exportedPalette = Image.new("RGB", (len(paletteColors), 1), (255, 255, 255))
     exportedPalettePixels = exportedPalette.load()
     for x in range(len(paletteColors)):
@@ -42,7 +43,7 @@ def export(args):
         exportedPalette.save("exported_pallet.png")
 
 def convert(args):
-    paletteColors = loadPalette(DATA_PATH)
+    paletteColors = loadPalette(DATA_DIRECTORY)
     originalImage = safeOpenImage(args.filepath)
     originalPixels = originalImage.load()
     width, height = originalImage.size
@@ -72,6 +73,7 @@ def main():
 
     export_parser = palette_subparser.add_parser("export")
     export_parser.add_argument("-n", "--name", help="specify result name")
+    export_parser.add_argument("-f", "--filepath")
     export_parser.set_defaults(function=export)
 
     convert_parser = subparser.add_parser("convert")
