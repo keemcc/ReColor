@@ -36,7 +36,10 @@ def export(args):
     exportedPalettePixels = exportedPalette.load()
     for x in range(len(paletteColors)):
         exportedPalettePixels[x, 0] = paletteColors.pop()
-    exportedPalette.save("exported_pallet.png")
+    if args.name:
+        exportedPalette.save(args.name+".png")
+    else:                
+        exportedPalette.save("exported_pallet.png")
 
 def convert(args):
     paletteColors = loadPalette(DATA_PATH)
