@@ -1,7 +1,6 @@
 import argparse
 from main_functions import palette, export, convert 
 
-
 def main():
     parser = argparse.ArgumentParser(prog="recolor", description="tools for recoloring images into rgb palettes")
     subparser = parser.add_subparsers()

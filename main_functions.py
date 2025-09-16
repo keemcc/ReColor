@@ -1,10 +1,11 @@
 from PIL import Image
-
 from helper_functions import safeOpenImage, getPalette, runColorPicker, savePalette, loadPalette, getClosestMatch
 from constants import DATA_DIRECTORY
 
+# Runs the palette command, defining the current palette
+#   Creates color palette based on image colors if filepath is specified or by color picker if not
+#   Resulting palette is saved to the data directory
 def palette(args):
-    print("run")
     palette = set()
     if args.filepath:
         paletteImage = safeOpenImage(filepath=(args.filepath))
@@ -14,6 +15,10 @@ def palette(args):
     print(palette)
     savePalette(palette, DATA_DIRECTORY)
 
+# Exports the current palette into a png file
+#   If a filepath is specified it will create a palette based on the passed image and save that palette
+#   If a filepath isn't specified it will save the currently defined palette saved in the data directory
+#   If a name is specified the palette image will be saved with that name, if not it will be titled "exported_palette.png"
 def export(args):
     paletteColors = set()
     if args.filepath:
@@ -30,6 +35,8 @@ def export(args):
     else:                
         exportedPalette.save("exported_pallet.png")
 
+# Converts an image into the currently defined color palette
+#   If a name is given, the result will be titled with that name, otherwise it will be titled "recolored_image.png"
 def convert(args):
     paletteColors = loadPalette(DATA_DIRECTORY)
     originalImage = safeOpenImage(args.filepath)
@@ -45,4 +52,4 @@ def convert(args):
     if args.name:
         originalImage.save(args.name+".png")
     else:
-        originalImage.save("edited.png")
+        originalImage.save("recolored_image.png")

@@ -1,16 +1,18 @@
 import pyautogui, traceback, sys, keyboard, os, pickle
 from PIL import Image
 
+# Saves passed palette set into a pickle at the passed path
+#   If the path does not exist, it will be created
 def savePalette(palette, path):
     if not os.path.exists(path):
         os.makedirs(path)
     with open(os.path.join(path, "palette.pkl"), "wb") as file:
         pickle.dump(palette, file)
 
+# Returns the palette stored within the pickle file at the given path
 def loadPalette(path):
     with open(os.path.join(path, "palette.pkl"), "rb") as file:
         return pickle.load(file)
-
 
 # Calculate the distance between two passed colors
 #   This is done using the 3 respective (R, G, B) values passed in the color tuple and the 3 dimensional distance formula
@@ -20,35 +22,35 @@ def getDistance(color1, color2):
     red2, green2, blue2 = color2
     return ((red1 - red2)**2 + (blue1 - blue2)**2 + (green1 - green2)**2)
 
-# Gets the color from the pallet that is the closest to the original color
+# Gets the color from the palette that is the closest to the original color
 #   Returns the color with the minimum distance from the original color
-def getClosestMatch(originalColor, palletColors):
+def getClosestMatch(originalColor, paletteColors):
     closestMatch = None
     matchDistance = None
-    for palletColor in palletColors:
-        currentDistance = getDistance(originalColor, palletColor)
+    for paletteColor in paletteColors:
+        currentDistance = getDistance(originalColor, paletteColor)
         if (not closestMatch) or (currentDistance < matchDistance):
-            closestMatch = palletColor
+            closestMatch = paletteColor
             matchDistance = currentDistance
     return closestMatch
 
-# Get the pallet colors as a set
+# Get the palette colors as a set
 #   Load an image where all colors within the image will be added to a set and returned
-def getPalette(palletImage):
-    palletColors = set()
-    pixels = palletImage.load()
-    width, height = palletImage.size
+def getPalette(paletteImage):
+    paletteColors = set()
+    pixels = paletteImage.load()
+    width, height = paletteImage.size
     for x in range(width):
         for y in range(height):
-            palletColors.add(pixels[x, y])
-    return palletColors
+            paletteColors.add(pixels[x, y])
+    return paletteColors
 
-# Grab color hovered by mouse and add it to the pallet
+# Grab color hovered by mouse and add it to the palette
 #   returns that grabbed color
-def grabColor(palletColors):
+def grabColor(paletteColors):
     cursorX, cursorY = pyautogui.position()
     grabbedColor = pyautogui.screenshot().getpixel((cursorX, cursorY))
-    palletColors.add(grabbedColor)
+    paletteColors.add(grabbedColor)
     print(f"Grabbed color {grabbedColor}")
 
 # Open an image relative to the media directory
@@ -80,8 +82,10 @@ def safeSaveImage(image, name):
         traceback.print_exc()
     sys.exit()
 
-def runColorPicker(palletColors):
-    print("Press 'p' to add hovered color to pallet.\n Once done, press 'Escape' to complete pallet.")
-    keyboard.on_press_key('p', lambda e: grabColor(palletColors))
+# Runs the color picker, adding each picked color to the passed paletteColors set
+#   Color picker lets user minimize terminal and pick any color within the screen the program is executed on
+def runColorPicker(paletteColors):
+    print("Press 'p' to add hovered color to palette.\n Once done, press 'Escape' to complete palette.")
+    keyboard.on_press_key('p', lambda e: grabColor(paletteColors))
     keyboard.wait('esc')
     keyboard.unhook_all()
