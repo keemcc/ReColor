@@ -12,8 +12,8 @@ def palette(args):
         palette = getPalette(paletteImage)
     else:
         runColorPicker(palette)
-    print(palette)
     savePalette(palette, DATA_DIRECTORY)
+    print("Palette saved successfully")
 
 # Exports the current palette into a png file
 #   If a filepath is specified it will create a palette based on the passed image and save that palette
@@ -32,8 +32,10 @@ def export(args):
         exportedPalettePixels[x, 0] = paletteColors.pop()
     if args.name:
         exportedPalette.save(args.name+".png")
+        print(f"Palette exported to {args.name}.png")
     else:                
-        exportedPalette.save("exported_pallet.png")
+        exportedPalette.save("exported_palette.png")
+        print("Palette exported to exported_palette.png")
 
 # Converts an image into the currently defined color palette
 #   If a name is given, the result will be titled with that name, otherwise it will be titled "recolored_image.png"
@@ -51,5 +53,7 @@ def convert(args):
             originalPixels[x, y] = colorMap[originalColor]
     if args.name:
         originalImage.save(args.name+".png")
+        print(f"Edited image saved to {args.name}.png")
     else:
         originalImage.save("recolored_image.png")
+        print("Edited image saved to recolored_image.png")
