@@ -1,3 +1,4 @@
+import sys
 from PIL import Image
 from helper_functions import safeOpenImage, getPalette, runColorPicker, savePalette, loadPalette, getClosestMatch
 from constants import DATA_DIRECTORY
@@ -40,7 +41,12 @@ def export(args):
 # Converts an image into the currently defined color palette
 #   If a name is given, the result will be titled with that name, otherwise it will be titled "recolored_image.png"
 def convert(args):
-    paletteColors = loadPalette(DATA_DIRECTORY)
+    try:
+        paletteColors = loadPalette(DATA_DIRECTORY)
+    except FileNotFoundError:
+        print("ERROR: Pallet not set!")
+        print("Please set a palette using the palette subcommand before converting an image.")
+        sys.exit()
     originalImage = safeOpenImage(args.filepath)
     originalPixels = originalImage.load()
     width, height = originalImage.size
