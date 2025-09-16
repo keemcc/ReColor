@@ -26,7 +26,12 @@ def export(args):
         paletteImage = safeOpenImage(filepath=(args.filepath))
         paletteColors = getPalette(paletteImage)
     else:
-        paletteColors = loadPalette(DATA_DIRECTORY)
+        try:
+            paletteColors = loadPalette(DATA_DIRECTORY)
+        except FileNotFoundError:
+            print("ERROR: Pallet not set!")
+            print("Please set a palette using the palette subcommand before exporting a palette.")
+            sys.exit()
     exportedPalette = Image.new("RGB", (len(paletteColors), 1), (255, 255, 255))
     exportedPalettePixels = exportedPalette.load()
     for x in range(len(paletteColors)):
