@@ -1,5 +1,16 @@
-import pyautogui, traceback, sys, keyboard
+import pyautogui, traceback, sys, keyboard, os, pickle
 from PIL import Image
+
+def savePalette(palette, path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    with open(os.path.join(path, "palette.pkl"), "wb") as file:
+        pickle.dump(palette, file)
+
+def loadPalette(path):
+    with open(os.path.join(path, "palette.pkl"), "rb") as file:
+        return pickle.load(file)
+
 
 # Calculate the distance between two passed colors
 #   This is done using the 3 respective (R, G, B) values passed in the color tuple and the 3 dimensional distance formula
